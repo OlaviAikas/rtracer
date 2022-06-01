@@ -11,34 +11,34 @@ const GAMMA: f64 = 0.45;
 
 /// The Camera type is a product type that contains the position of the
 /// camera, the direction its facing, the direction that's "up" from the
-/// camera's point of view, the distance from the camera to the screen and the
-/// viewing angle of the camera, which determines the screen size in the scene
-/// together with the focal distance.
-///               pos   dir   up    dist angle
-pub struct Camera(Vect, Vect, Vect, f64, f64);
+/// camera's point of view and the
+/// viewing angle of the camera, which determines how much of the world the
+/// camera sees.
+///               pos   dir   up    angle
+pub struct Camera(Vect, Vect, Vect, f64);
 
 /// Create a new camera with the given position, direction,
 /// up direction and angle. Enforces that dot(dir, up) == 0,
 /// and norms pos dir and up just to be safe.
-pub fn new(pos: Vect, dir: Vect, up: Vect, dist: f64, angle: f64) -> Camera {
+pub fn new(pos: Vect, dir: Vect, up: Vect, angle: f64) -> Camera {
     if dir.dot(&up) != 0f64 {
         panic!(
             "Tried to create camera with non-perpendicular
         facing and up directions"
         );
     }
-    Camera(pos, dir.normalise(), up.normalise(), dist, angle)
+    Camera(pos, dir.normalise(), up.normalise(), angle)
 }
 
 impl Camera {
     pub fn rays(&self) -> RayIter {
-        let Camera(pos, dir, up, dist, angle) = self;
-        let screen_width = 2f64 * dist * (angle / 2f64).tan();
+        let Camera(pos, dir, up, angle) = self;
+        let screen_width = 2f64 * (angle / 2f64).tan();
         let screen_heigth = screen_width * (crate::IMAGE_HEIGTH as f64 / crate::IMAGE_WIDTH as f64);
         let left = dir.cross(&up).normalise();
         RayIter {
             screen_top_left: pos
-                .add(&dir.scalar_mul(&dist))
+                .add(&dir)
                 .add(&up.scalar_mul(&(screen_heigth / 2f64)))
                 .add(&left.scalar_mul(&(screen_width / 2f64))),
             camera_pos: *pos,
@@ -56,14 +56,14 @@ impl Camera {
     pub fn render(&self, scene: Arc<Scene>, nrays: u32, depth: u8) -> RgbImage {
         println!("Starting render");
         let t0 = Instant::now();
-        let mut res = RgbImage::new(crate::IMAGE_WIDTH, crate::IMAGE_HEIGTH);
         let (tx, rx) = mpsc::channel();
         self.render_rays(self.rays(), scene, nrays, depth, tx);
         println!("finished tracing");
+        println!("tracing complete in {}ms", t0.elapsed().as_millis());
+        let mut res = RgbImage::new(crate::IMAGE_WIDTH, crate::IMAGE_HEIGTH);
         for ((row, col), (r, g, b)) in rx.iter() {
             res.put_pixel(col, row, Rgb([r, g, b]));
         }
-        println!("Render complete in {}ms", t0.elapsed().as_millis());
         res
     }
 

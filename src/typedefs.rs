@@ -9,7 +9,7 @@ pub struct Intersection {
 
 #[derive(Copy, Clone)]
 pub enum Material {
-    Lambertian,
+    Lambertian(Vect), //Albedo
 }
 
 pub type Scene = (

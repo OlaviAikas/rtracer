@@ -1,4 +1,3 @@
-use crate::geometry::Geometry;
 use crate::typedefs::{Intersection, Material, Scene};
 use crate::vect::*;
 use rand::prelude::*;
@@ -28,7 +27,7 @@ impl Ray {
             pos: zero(),
         };
         let mut closest_dsquared = std::f64::INFINITY;
-        let mut closest_geo: &std::boxed::Box<dyn Geometry + Send + Sync> = &scene.0[0];
+        let mut closest_geo_material: Material = Material::Lambertian(zero());
         for geo in &scene.0 {
             let intersection = geo.intersect(&self);
             if intersection.normal != zero() {
@@ -36,25 +35,24 @@ impl Ray {
                 if dsquared < closest_dsquared {
                     closest_dsquared = dsquared;
                     closest_intersection = intersection;
-                    closest_geo = geo;
+                    closest_geo_material = geo.get_material();
                 }
             }
         }
         if closest_dsquared < std::f64::INFINITY {
-            let mut tot_light = 0.0;
-            for light in &scene.1 {
-                tot_light += light.get_contribution(&closest_intersection, &scene);
-            }
-            if tot_light <= 0.1 {
-                return Vect(255.0, 0.0, 250.0);
-            }
-            let geo_alb = closest_geo.get_albedo(&closest_intersection.pos);
-            let l0 = geo_alb.scalar_mul(&tot_light);
-            match closest_geo.get_material() {
-                Material::Lambertian => {
+            match closest_geo_material {
+                Material::Lambertian(albedo) => {
+                    let mut tot_light = 0.0;
+                    for light in &scene.1 {
+                        tot_light += light.get_contribution(&closest_intersection, &scene);
+                    }
+                    if tot_light <= 0.1 {
+                        return Vect(255.0, 0.0, 250.0);
+                    }
+                    let l0 = albedo.scalar_mul(&tot_light);
                     let rand_dir = box_muller_random_vector(&closest_intersection.normal);
                     let w1 = Ray(closest_intersection.pos, rand_dir);
-                    return l0.add(&geo_alb.pointwise_mul(&w1.colour(scene, depth - 1)));
+                    return l0.add(&albedo.pointwise_mul(&w1.colour(scene, depth - 1)));
                 }
             }
         }
@@ -63,9 +61,8 @@ impl Ray {
 }
 
 fn box_muller_random_vector(normal: &Vect) -> Vect {
-    let mut rng = rand::thread_rng();
-    let r1: f64 = rng.gen();
-    let r2: f64 = rng.gen();
+    let r1: f64 = random();
+    let r2: f64 = random();
     let sqrt1mr2 = (1f64 - r2).sqrt();
     let twopir1 = PI2 * r1;
     let x = (twopir1.cos()) * sqrt1mr2;

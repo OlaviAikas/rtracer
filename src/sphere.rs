@@ -7,7 +7,6 @@ pub struct Sphere {
     pub pos: Vect,
     pub radius: f64,
     pub material: Material,
-    pub albedo: Vect,
 }
 
 impl Geometry for Sphere {
@@ -61,9 +60,6 @@ impl Geometry for Sphere {
         };
     }
 
-    fn get_albedo(&self, _point: &Vect) -> Vect {
-        self.albedo
-    }
     fn get_material(&self) -> Material {
         self.material
     }
@@ -76,8 +72,7 @@ fn sphere_intersection_test() {
     let s = Sphere {
         pos: Vect(10f64, 0f64, 0f64),
         radius: 5f64,
-        material: Material::Lambertian,
-        albedo: Vect(0.0, 0.0, 0.0),
+        material: Material::Lambertian(zero()),
     };
     assert_ne!(s.intersect(&r1).normal, zero());
     assert_eq!(s.intersect(&r2).normal, zero());

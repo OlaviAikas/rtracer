@@ -6,7 +6,6 @@ use crate::vect::*;
 pub struct Plane {
     pub point: Vect,
     pub normal: Vect,
-    pub albedo: Vect,
     pub material: Material,
 }
 
@@ -46,9 +45,6 @@ impl Geometry for Plane {
                 normal: self.normal.scalar_mul(&-1f64),
             }
         }
-    }
-    fn get_albedo(&self, _point: &Vect) -> Vect {
-        self.albedo
     }
     fn get_material(&self) -> Material {
         self.material
