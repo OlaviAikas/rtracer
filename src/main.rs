@@ -12,12 +12,17 @@ use std::sync::Arc;
 use typedefs::{Material, Scene};
 use vect::*;
 
+//Benchmark 10 rays 4 depth 8 threads
+// 14899ms
+
+//Benchmark 1000 rays 8 depth 8 threads
+// 422566ms
 const EPSILON: f64 = 0.0001;
 const IMAGE_WIDTH: u32 = 1000;
 const IMAGE_HEIGTH: u32 = 1000;
-const NRAYS: u32 = 2;
-const DEPTH: u8 = 4;
-const N_THREADS: usize = 4;
+const NRAYS: u32 = 1000;
+const DEPTH: u8 = 8;
+const N_THREADS: usize = 8;
 
 fn main() {
     let cam = camera::new(
@@ -72,7 +77,7 @@ fn main() {
     //Light
     scene.1.push(Box::new(light::Pointlight {
         pos: Vect(0.0, 5.0, 0.0),
-        intensity: 1000000000f64,
+        intensity: 400000000f64,
     }));
     let scene_p = Arc::new(scene);
     let img = cam.render(scene_p, NRAYS, DEPTH);

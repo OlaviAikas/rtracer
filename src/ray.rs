@@ -39,6 +39,12 @@ impl Ray {
                 }
             }
         }
+        let closest_intersection = Intersection {
+            normal: closest_intersection.normal,
+            pos: closest_intersection
+                .pos
+                .add(&closest_intersection.normal.scalar_mul(&crate::EPSILON)),
+        };
         if closest_dsquared < std::f64::INFINITY {
             match closest_geo_material {
                 Material::Lambertian(albedo) => {
