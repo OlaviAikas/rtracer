@@ -9,6 +9,8 @@ edition = "2021"
 image = ">=0.24.2"
 rand = ">=0.8.5"
 threadpool = ">=1.8.1"
+serde = { version = "1.0", features = ["derive"] }
+toml = ">=0.5.9"
 
 [profile.dev]
-opt-level = 3               # Use slightly better optimizations.
+opt-level = 3 # Use slightly better optimizations.
