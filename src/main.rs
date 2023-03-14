@@ -43,6 +43,6 @@ fn main() {
     let img = cam.render(scene_p, NRAYS, DEPTH);
     match img.save_with_format("test_img.png", ImageFormat::Png) {
         Ok(_) => println!("Yay, managed to save!"),
-        Err(e) => println!("Oh fuck, {}", e),
+        Err(e) => println!("Oh no!, {}", e),
     }
 }
