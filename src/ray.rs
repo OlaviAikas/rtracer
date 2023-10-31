@@ -60,9 +60,23 @@ impl Ray {
                     let w1 = Ray(closest_intersection.pos, rand_dir);
                     return l0.add(&albedo.pointwise_mul(&w1.colour(scene, depth - 1)));
                 }
+                Material::Mirror => {
+                    return self
+                        .reflect(&Ray(closest_intersection.pos, closest_intersection.normal))
+                        .colour(scene, depth - 1);
+                }
             }
         }
         Vect(50.0, 0.0, 0.0)
+    }
+
+    // Identify Ray (pos, dir) with the hyperplane H that contains pos and
+    // for all x in H, x.dot(dir) == 0
+    pub fn reflect(&self, hyperplane: &Ray) -> Ray {
+        let Ray(hpos, hdir) = *hyperplane;
+        let Ray(_spos, sdir) = *self;
+        let l = -2f64 * sdir.dot(&hdir);
+        Ray(hpos, sdir.add(&hdir.scalar_mul(&l)))
     }
 }
 

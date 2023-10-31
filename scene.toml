@@ -6,7 +6,7 @@ intensity = 400000000.0
 [[sphere]]
 position = [-2.0, 2.0, 10.0]
 radius = 2.0
-material = "Lambertian"
+material = "Mirror"
 colour = [1.0, 1.0, 1.0]
 
 # Right sphere
@@ -14,7 +14,7 @@ colour = [1.0, 1.0, 1.0]
 position = [2.0, 2.0, 10.0]
 radius = 2.0
 material = "Lambertian"
-colour = [0.01, 0.01, 0.01]
+colour = [0.5, 0.5, 0.5]
 
 # Floor
 [[plane]]

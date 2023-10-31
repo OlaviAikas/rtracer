@@ -21,7 +21,7 @@ use vect::*;
 const EPSILON: f64 = 0.0001;
 const IMAGE_WIDTH: u32 = 1000;
 const IMAGE_HEIGTH: u32 = 1000;
-const NRAYS: u32 = 100;
+const NRAYS: u32 = 10;
 const DEPTH: u8 = 8;
 const N_THREADS: usize = 8;
 

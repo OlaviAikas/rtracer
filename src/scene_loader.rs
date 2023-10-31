@@ -69,6 +69,15 @@ pub fn load_scene(filename: &str) -> Result<Scene, Error> {
                             material: Material::Lambertian(Vect(c[0], c[1], c[2])),
                         })),
                     },
+                    &"Mirror" => scene.0.push(Box::new(Sphere {
+                        pos: Vect(
+                            sphere_loader.position[0],
+                            sphere_loader.position[1],
+                            sphere_loader.position[2],
+                        ),
+                        radius: sphere_loader.radius,
+                        material: Material::Mirror,
+                    })),
                     _ => return Err(Error::new(ErrorKind::Other, "Invalid material type")),
                 }
             }
